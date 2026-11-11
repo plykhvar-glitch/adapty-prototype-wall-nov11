@@ -70,9 +70,6 @@ pal.append('.card .art img{right:0;top:0;height:100%;width:58%;object-fit:cover;
 pal.append('.card .art::after{display:none}')
 pal.append('.card .tap{background:rgba(255,255,255,.94);color:#141218;padding:6px 9px;border-radius:999px;font-size:10px;box-shadow:0 4px 12px rgba(0,0,0,.18)}')
 pal.append('.card .ic{border:0}')
-pal.append('.who{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}')
-pal.append('.who button{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--edge);font:600 13px/1 var(--body);color:var(--text2)}')
-pal.append('.who button.on{background:var(--text);color:var(--night);border-color:var(--text)}')
 pal.append('.card[hidden]{display:none!important}')
 css = css.replace('</style>', '') + '\n' + '\n'.join(pal) + '\n'
 
@@ -84,7 +81,7 @@ head = re.sub(r'<meta property="og:description" content="[^"]*">',
 views = []
 for (k, t, sub, own, url, *_r) in APPS:
     u = url + '?view=proto'
-    views.append({'key': k, 'title': t, 'sub': sub, 'owner': own, 'cls': 'v-' + k, 'icon': 'img/%s-icon.png' % k,
+    views.append({'key': k, 'title': t, 'sub': sub, 'cls': 'v-' + k, 'icon': 'img/%s-icon.png' % k,
                   'art': 'img/%s-art.jpg' % k, 'url': u, 'short': url.replace('https://', '').rstrip('/'), 'qr': qr_svg(u)})
 
 body = '''<body>
@@ -98,7 +95,6 @@ body = '''<body>
   </div>
   <h1>Their onboarding and paywall, <em>rebuilt</em> and live on their phone.</h1>
   <p class="lede">Each prototype is the app’s own flow redrawn in its own design: five ranked ideas and a paywall that uses their answers. Tap a card and hand them the screen.</p>
-  <div class="who" id="who"><button class="on" data-o="">All</button><button data-o="Eddie">Eddie</button><button data-o="Bogdan">Bogdan</button><button data-o="Polina">Polina</button></div>
   <div class="grid" id="grid"></div>
   <div class="how">
     <div><b>1 · Tap</b>Pick the company you are talking to.</div>
@@ -131,14 +127,9 @@ function $(s){ return document.querySelector(s); }
 function icon(v){ return '<span class="ic"><img src="'+v.icon+'" alt=""></span>'; }
 var LIST=VIEWS.map(function(_,i){ return i; });
 $('#grid').innerHTML=VIEWS.map(function(v,i){
-  return '<button class="card '+v.cls+'" data-i="'+i+'" data-o="'+v.owner+'"><span class="art"><img src="'+v.art+'" alt=""></span><span class="id"><span class="ics">'+icon(v)+'</span><span><h2>'+v.title+'</h2><span class="kind">'+v.sub+'<br>Onboarding + paywall</span></span></span>'
+  return '<button class="card '+v.cls+'" data-i="'+i+'"><span class="art"><img src="'+v.art+'" alt=""></span><span class="id"><span class="ics">'+icon(v)+'</span><span><h2>'+v.title+'</h2><span class="kind">'+v.sub+'<br>Onboarding + paywall</span></span></span>'
    +'<span class="go"><span class="minis"><span class="mini">'+v.qr+'</span></span><span class="tap">Tap to show</span></span></button>';
 }).join('');
-/* owner filter: the swipe on the stage follows the filtered list */
-document.querySelectorAll('#who button').forEach(function(b){ b.addEventListener('click',function(){
-  var o=b.dataset.o; document.querySelectorAll('#who button').forEach(function(x){ x.classList.toggle('on',x===b); });
-  LIST=[]; document.querySelectorAll('.card').forEach(function(c){ var ok=!o||c.dataset.o===o; c.hidden=!ok; if(ok) LIST.push(+c.dataset.i); });
-}); });
 var pos=-1, stage=$('#stage'), lock=null;
 function render(p){
   pos=(p+LIST.length)%%LIST.length; var v=VIEWS[LIST[pos]];
@@ -169,7 +160,7 @@ $('#copy').addEventListener('click',function(){ var u=VIEWS[LIST[pos]].url;
 var h=(location.hash||'').slice(1); VIEWS.forEach(function(v,i){ if(v.key===h) show(i); });
 </script>
 <script>
-var BUILD='w1';
+var BUILD='w2';
 fetch(location.pathname+'?cb='+Date.now(),{cache:'no-store'}).then(function(r){ return r.text(); }).then(function(x){
   var m=x.match(/var BUILD='([^']+)'/); if(m && m[1]!==BUILD){ var q=new URLSearchParams(location.search); q.set('v',m[1]); location.replace(location.pathname+'?'+q.toString()+location.hash); }
 }).catch(function(){});
